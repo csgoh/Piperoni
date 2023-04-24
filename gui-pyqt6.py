@@ -99,8 +99,8 @@ class MyLexer(QsciLexerCustom):
         ]
 
         # token_list = []
-        for token in p.findall(text):
-            print(f"token: '{token}'")
+        # for token in p.findall(text):
+        #     print(f"token: '{token}'")
 
         # raise SystemExit()
         # token_list.append((token, len(bytearray(token, "utf-8"))))
@@ -121,7 +121,6 @@ class MyLexer(QsciLexerCustom):
                 if token[0] == "*/":
                     multiline_comm_flag = False
             else:
-                # print(f"token[0]: '{token[0]}',  token[1]: {token[1]}")
                 if token[0] in ["title", "colourtheme", "pool", "lane", "as"]:
                     # Red style
                     self.setStyling(token[1], 1)
@@ -133,11 +132,9 @@ class MyLexer(QsciLexerCustom):
                     # Green style
                     self.setStyling(token[1], 3)
                 elif token[0].startswith('-"') and token[0].endswith('"->'):
-                    print(f"arrow label {token[0]}")
                     self.setStyling(token[1], 2)
                 elif token[0] in ["->"]:
                     # Red style
-                    print(f"arrow {token[0]}")
                     self.setStyling(token[1], 2)
                 elif token[0] == "/*":
                     multiline_comm_flag = True
@@ -151,8 +148,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        test_text = """
-title: Make pizza process
+        test_text = """title: Make pizza process
 lane: Pizza Shop
     (start) as start
     [Put the pizza in the oven] as put_pizza_in_oven
@@ -283,7 +279,7 @@ if __name__ == "__main__":
     # Set the window icon
     main_window.setWindowIcon(icon)
 
-    main_window.setWindowTitle("Process Piper: Text to Diagram")
+    main_window.setWindowTitle("Process Piper Designer")
     main_window.setGeometry(0, 0, 1200, 800)
     screen = QApplication.instance().primaryScreen()
 
