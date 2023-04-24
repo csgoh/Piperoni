@@ -91,7 +91,7 @@ class MyLexer(QsciLexerCustom):
         # p = re.compile(r"[*]\/|\/[*]|\s+|\w+|\W")
 
         # p = re.compile(r'\[.*?\]|\(.*?\)|\<.*?\>|->|-"|"->|\s+|\w+|\W')
-        p = re.compile(r"\[.*?\]|\(.*?\)|\<.*?\>|\s+|\w+|-\".*?\"->|->")
+        p = re.compile(r"\[.*?\]|\(.*?\)|\<.*?\>|\s+|\w+|-\".*?\"->|->|\W")
 
         # 'token_list' is a list of tuples: (token_name, token_len)
         token_list = [
@@ -99,8 +99,8 @@ class MyLexer(QsciLexerCustom):
         ]
 
         # token_list = []
-        # for token in p.findall(text):
-        #     print(f"token: '{token}'")
+        for token in p.findall(text):
+            print(f"token: '{token}'")
 
         # raise SystemExit()
         # token_list.append((token, len(bytearray(token, "utf-8"))))
@@ -121,27 +121,23 @@ class MyLexer(QsciLexerCustom):
                 if token[0] == "*/":
                     multiline_comm_flag = False
             else:
-                print(f"token[0]: '{token[0]}',  token[1]: {token[1]}")
+                # print(f"token[0]: '{token[0]}',  token[1]: {token[1]}")
                 if token[0] in ["title", "colourtheme", "pool", "lane", "as"]:
                     # Red style
                     self.setStyling(token[1], 1)
-                # check if token[0] starts with '[' and end with ']'
                 elif (
                     (token[0].startswith("[") and token[0].endswith("]"))
                     or (token[0].startswith("(") and token[0].endswith(")"))
                     or (token[0].startswith("<") and token[0].endswith(">"))
                 ):
                     # Green style
-
                     self.setStyling(token[1], 3)
-
                 elif token[0].startswith('-"') and token[0].endswith('"->'):
+                    print(f"arrow label {token[0]}")
                     self.setStyling(token[1], 2)
                 elif token[0] in ["->"]:
                     # Red style
-                    self.setStyling(token[1], 1)
-                elif token[0] in ["(", ")", "<", ">", "[", "]", "#"]:
-                    # Blue style
+                    print(f"arrow {token[0]}")
                     self.setStyling(token[1], 2)
                 elif token[0] == "/*":
                     multiline_comm_flag = True
@@ -149,25 +145,6 @@ class MyLexer(QsciLexerCustom):
                 else:
                     # Default style
                     self.setStyling(token[1], 0)
-
-
-myCodeSample = r"""#include <stdio.h>
-/*
- * This is a
- * multiline
- * comment */
-int main()
-{
-    char arr[5] = {'h', 'e', 'l', 'l', 'o'};
-
-    int i;
-    for(i = 0; i < 5; i++) {
-        printf(arr[i]);
-    }
-    return 0;
-}""".replace(
-    "\n", "\r\n"
-)
 
 
 class MainWindow(QMainWindow):
