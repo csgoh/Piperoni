@@ -16,6 +16,8 @@ from PyQt6.QtWidgets import (
     QGraphicsScene,
     QGraphicsView,
     QVBoxLayout,
+    QSizePolicy,
+    QScrollArea,
 )
 
 from PyQt6.QtGui import QImage, QPixmap, QIcon
@@ -121,7 +123,7 @@ class MyLexer(QsciLexerCustom):
                 if token[0] == "*/":
                     multiline_comm_flag = False
             else:
-                if token[0] in ["title", "colourtheme", "pool", "lane", "as"]:
+                if token[0] in ["title", "colourtheme", "pool", "lane", "as", "footer"]:
                     # Red style
                     self.setStyling(token[1], 1)
                 elif (
@@ -160,8 +162,8 @@ lane: Pizza Shop
 start->put_pizza_in_oven->check_pizza_done->done_baking
 done_baking-"Yes"->take_pizza_out_of_oven->end
 done_baking-"No"->put_pizza_in_oven
-        """
-        # self.text_input = QPlainTextEdit(test_text)
+"""
+
         self.__myFont = QFont()
         self.__myFont.setPointSize(11)
 
@@ -173,14 +175,16 @@ done_baking-"No"->put_pizza_in_oven
 
         # 1. Text wrapping
         # -----------------
-        # self.text_input.setWrapMode(QsciScintilla.WrapWord)
-        # self.text_input.setWrapVisualFlags(QsciScintilla.WrapFlagByText)
-        # self.text_input.setWrapIndentMode(QsciScintilla.WrapIndentIndented)
+        self.text_input.setWrapMode(QsciScintilla.WrapMode.WrapWord)
+        self.text_input.setWrapVisualFlags(QsciScintilla.WrapVisualFlag.WrapFlagByText)
+        self.text_input.setWrapIndentMode(
+            QsciScintilla.WrapIndentMode.WrapIndentIndented
+        )
 
         # 2. End-of-line mode
         # --------------------
-        # self.text_input.setEolMode(QsciScintilla.EolWindows)
-        # self.text_input.setEolVisibility(False)
+        self.text_input.setEolMode(QsciScintilla.EolMode.EolWindows)
+        self.text_input.setEolVisibility(False)
 
         # 3. Indentation
         # ---------------
@@ -200,9 +204,11 @@ done_baking-"No"->put_pizza_in_oven
         # 5. Margins
         # -----------
         # Margin 0 = Line nr margin
-        # self.text_input.setMarginType(0, QsciScintilla.NumberMargin)
+        self.text_input.setMarginType(0, QsciScintilla.MarginType.NumberMargin)
         self.text_input.setMarginWidth(0, "0000")
         self.text_input.setMarginsForegroundColor(QColor("#ff888888"))
+
+        self.text_input.setMinimumHeight(400)
 
         # -------------------------------- #
         #          Install lexer           #
@@ -214,15 +220,39 @@ done_baking-"No"->put_pizza_in_oven
         self.save_button = QPushButton("Save")
         self.output_image = QLabel()
 
-        self.layout = QVBoxLayout()
+        # self.output_image.setSizePolicy(
+        #     QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        # )
+
+        # Create a scroll area widget
+        self.scroll_area = QScrollArea(self)
+        self.scroll_area.setWidgetResizable(True)
+
+        # self.scroll_area.setFixedSize(1200, 800)
+        self.scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+
+        # Create a widget to contain the scrollable content
+        scroll_content = QWidget(self.scroll_area)
+        self.scroll_area.setWidget(scroll_content)
+
+        self.layout = QVBoxLayout(scroll_content)
         self.layout.addWidget(self.text_input)
         self.layout.addWidget(self.generate_button)
+
+        self.image = QImage()
+        self.pixmap = QPixmap()
+
         self.layout.addWidget(self.output_image)
         self.layout.addWidget(self.save_button)
 
-        self.central_widget = QWidget()
-        self.central_widget.setLayout(self.layout)
-        self.setCentralWidget(self.central_widget)
+        scroll_content.setLayout(self.layout)
+
+        # Create a layout for the main window and add the scroll area to it
+        main_layout = QVBoxLayout(self)
+        main_layout.addWidget(self.scroll_area)
+        self.setLayout(main_layout)
 
         self.generate_button.clicked.connect(self.generate_diagram)
         self.save_button.clicked.connect(self.save_diagram)
@@ -239,21 +269,20 @@ done_baking-"No"->put_pizza_in_oven
             return
 
         # Load the diagram image
-        image = QImage(output_image_file)
+        self.pixmap.load(output_image_file)
 
-        # Create a graphics scene and view
-        scene = QGraphicsScene()
-        view = QGraphicsView()
-        view.setScene(scene)
+        self.output_image.setPixmap(
+            self.pixmap.scaled(
+                self.output_image.size(),
+                aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio,
+            )
+        )
 
-        # Add the image to the scene
-        scene.addPixmap(QPixmap.fromImage(image))
+        self.output_image.setPixmap(self.pixmap)
 
-        # Set the size of the view to match the image
-        view.setFixedSize(image.width(), image.height())
-
-        # Set the output image label to display the view
-        self.output_image.setPixmap(view.grab())
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.scroll_area.setGeometry(0, 0, self.width(), self.height())
 
     def save_diagram(self):
         # Get the filename of the diagram to save
@@ -279,7 +308,8 @@ if __name__ == "__main__":
     # Set the window icon
     main_window.setWindowIcon(icon)
 
-    main_window.setWindowTitle("Process Piper Designer")
+    # Other name Piperella
+    main_window.setWindowTitle("Piperino v0.1 (a graphical frontend for ProcessPiper)")
     main_window.setGeometry(0, 0, 1200, 800)
     screen = QApplication.instance().primaryScreen()
 
