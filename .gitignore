@@ -129,4 +129,5 @@ dmypy.json
 .pyre/
 
 
-*png
+output*png
+piper*png
