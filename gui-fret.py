@@ -1,3 +1,4 @@
+import time
 import flet as ft
 from flet import Theme, Icon
 import logging
@@ -88,7 +89,7 @@ def main(page: ft.page):
             nonlocal generated_image
             generated_code, generated_image = render(diagram_text)
             save_diagram_button.visible = True
-            output_image_file = "diagram.png"
+            output_image_file = "output" + str(time.time()) + ".png"
             if os.path.exists(output_image_file):
                 # delete output_image_file
                 os.remove(output_image_file)
