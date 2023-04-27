@@ -13,144 +13,61 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QPlainTextEdit,
     QFileDialog,
-    QGraphicsScene,
-    QGraphicsView,
+    QHBoxLayout,
     QVBoxLayout,
     QSizePolicy,
     QScrollArea,
+    QToolBar,
+    QStatusBar,
 )
 
-from PyQt6.QtGui import QImage, QPixmap, QIcon
+from PyQt6.QtGui import (
+    QImage,
+    QPixmap,
+    QIcon,
+    QFont,
+    QFontDatabase,
+    QColor,
+    QSyntaxHighlighter,
+    QTextCharFormat,
+)
 from PyQt6.Qsci import *
 
 from PIL import Image
 
 
-class MyLexer(QsciLexerCustom):
-    def __init__(self, parent):
-        super(MyLexer, self).__init__(parent)
-        # Default text settings
-        # ----------------------
-        self.setDefaultColor(QColor("#ff000000"))
-        self.setDefaultPaper(QColor("#ffffffff"))
-        self.setDefaultFont(QFont("Consolas", 11))
+class Highlighter(QSyntaxHighlighter):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._mapping = {}
 
-        # Initialize colors per style
-        # ----------------------------
-        self.setColor(QColor("#ff000000"), 0)  # Style 0: black
-        self.setColor(QColor("#ff7f0000"), 1)  # Style 1: red
-        self.setColor(QColor("#ff0000bf"), 2)  # Style 2: blue
-        self.setColor(QColor("#ff007f00"), 3)  # Style 3: green
+    def add_mapping(self, pattern, pattern_format):
+        self._mapping[pattern] = pattern_format
 
-        # Initialize paper colors per style
-        # ----------------------------------
-        self.setPaper(QColor("#ffffffff"), 0)  # Style 0: white
-        self.setPaper(QColor("#ffffffff"), 1)  # Style 1: white
-        self.setPaper(QColor("#ffffffff"), 2)  # Style 2: white
-        self.setPaper(QColor("#ffffffff"), 3)  # Style 3: white
+    def highlightBlock(self, text_block):
+        for pattern, fmt in self._mapping.items():
+            for match in re.finditer(pattern, text_block):
+                start, end = match.span()
+                self.setFormat(start, end - start, fmt)
 
-        # Initialize fonts per style
-        # ---------------------------
-        self.setFont(
-            QFont("Consolas", 11, weight=QFont.Weight.Bold), 0
-        )  # Style 0: Consolas 14pt
-        self.setFont(
-            QFont("Consolas", 11, weight=QFont.Weight.Bold), 1
-        )  # Style 1: Consolas 14pt
-        self.setFont(
-            QFont("Consolas", 11, weight=QFont.Weight.Bold), 2
-        )  # Style 2: Consolas 14pt
-        self.setFont(
-            QFont("Consolas", 11, weight=QFont.Weight.Bold), 3
-        )  # Style 3: Consolas 14pt
 
-    def language(self):
-        return "SimpleLanguage"
-
-    def description(self, style):
-        if style == 0:
-            return "myStyle_0"
-        elif style == 1:
-            return "myStyle_1"
-        elif style == 2:
-            return "myStyle_2"
-        elif style == 3:
-            return "myStyle_3"
-        ###
-        return ""
-
-    def styleText(self, start, end):
-        # 1. Initialize the styling procedure
-        # ------------------------------------
-        self.startStyling(start)
-
-        # 2. Slice out a part from the text
-        # ----------------------------------
-        text = self.parent().text()[start:end]
-
-        # 3. Tokenize the text
-        # ---------------------
-        # p = re.compile(r"[*]\/|\/[*]|\s+|\w+|\W")
-
-        # p = re.compile(r'\[.*?\]|\(.*?\)|\<.*?\>|->|-"|"->|\s+|\w+|\W')
-        p = re.compile(r"\[.*?\]|\(.*?\)|\<.*?\>|\s+|\w+|-\".*?\"->|->|\W")
-
-        # 'token_list' is a list of tuples: (token_name, token_len)
-        token_list = [
-            (token, len(bytearray(token, "utf-8"))) for token in p.findall(text)
-        ]
-
-        # token_list = []
-        # for token in p.findall(text):
-        #     print(f"token: '{token}'")
-
-        # raise SystemExit()
-        # token_list.append((token, len(bytearray(token, "utf-8"))))
-
-        # 4. Style the text
-        # ------------------
-        # 4.1 Check if multiline comment
-        multiline_comm_flag = False
-        editor = self.parent()
-        if start > 0:
-            previous_style_nr = editor.SendScintilla(editor.SCI_GETSTYLEAT, start - 1)
-            if previous_style_nr == 3:
-                multiline_comm_flag = True
-        # 4.2 Style the text in a loop
-        for i, token in enumerate(token_list):
-            if multiline_comm_flag:
-                self.setStyling(token[1], 3)
-                if token[0] == "*/":
-                    multiline_comm_flag = False
-            else:
-                if token[0] in ["title", "colourtheme", "pool", "lane", "as", "footer"]:
-                    # Red style
-                    self.setStyling(token[1], 1)
-                elif (
-                    (token[0].startswith("[") and token[0].endswith("]"))
-                    or (token[0].startswith("(") and token[0].endswith(")"))
-                    or (token[0].startswith("<") and token[0].endswith(">"))
-                ):
-                    # Green style
-                    self.setStyling(token[1], 3)
-                elif token[0].startswith('-"') and token[0].endswith('"->'):
-                    self.setStyling(token[1], 2)
-                elif token[0] in ["->"]:
-                    # Red style
-                    self.setStyling(token[1], 2)
-                elif token[0] == "/*":
-                    multiline_comm_flag = True
-                    self.setStyling(token[1], 3)
-                else:
-                    # Default style
-                    self.setStyling(token[1], 0)
+# re.compile(r"\[.*?\]|\(.*?\)|\<.*?\>|\s+|\w+|-\".*?\"->|->|\W")
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        super().__init__()
+        # super().__init__()
+        super(MainWindow, self).__init__()
+        self.setStyleSheet(
+            """
+			QWidget {
+				font-size: 18px;
+                font-weight: bold;
+			}
+		"""
+        )
 
-        test_text = """title: Make pizza process
+        self.test_text = """title: Make pizza process
 lane: Pizza Shop
     (start) as start
     [Put the pizza in the oven] as put_pizza_in_oven
@@ -164,101 +81,99 @@ done_baking-"Yes"->take_pizza_out_of_oven->end
 done_baking-"No"->put_pizza_in_oven
 """
 
-        self.__myFont = QFont()
-        self.__myFont.setPointSize(11)
-
-        self.text_input = QsciScintilla()
-        self.text_input.setText(test_text)
-        self.text_input.setLexer(None)  # We install lexer later
-        self.text_input.setUtf8(True)  # Set encoding to UTF-8
-        self.text_input.setFont(self.__myFont)  # Gets overridden by lexer later on
-
-        # 1. Text wrapping
-        # -----------------
-        self.text_input.setWrapMode(QsciScintilla.WrapMode.WrapWord)
-        self.text_input.setWrapVisualFlags(QsciScintilla.WrapVisualFlag.WrapFlagByText)
-        self.text_input.setWrapIndentMode(
-            QsciScintilla.WrapIndentMode.WrapIndentIndented
-        )
-
-        # 2. End-of-line mode
-        # --------------------
-        self.text_input.setEolMode(QsciScintilla.EolMode.EolWindows)
-        self.text_input.setEolVisibility(False)
-
-        # 3. Indentation
-        # ---------------
-        self.text_input.setIndentationsUseTabs(False)
-        self.text_input.setTabWidth(4)
-        self.text_input.setIndentationGuides(True)
-        self.text_input.setTabIndents(True)
-        self.text_input.setAutoIndent(True)
-
-        # 4. Caret
-        # ---------
-        self.text_input.setCaretForegroundColor(QColor("#ff0000ff"))
-        self.text_input.setCaretLineVisible(True)
-        self.text_input.setCaretLineBackgroundColor(QColor("#1f0000ff"))
-        self.text_input.setCaretWidth(2)
-
-        # 5. Margins
-        # -----------
-        # Margin 0 = Line nr margin
-        self.text_input.setMarginType(0, QsciScintilla.MarginType.NumberMargin)
-        self.text_input.setMarginWidth(0, "0000")
-        self.text_input.setMarginsForegroundColor(QColor("#ff888888"))
-
-        self.text_input.setMinimumHeight(400)
-
-        # -------------------------------- #
-        #          Install lexer           #
-        # -------------------------------- #
-        self.__lexer = MyLexer(self.text_input)
-        self.text_input.setLexer(self.__lexer)
-
+        self.highlighter = Highlighter()
+        self.setUpEditor()
         self.generate_button = QPushButton("Generate")
         self.save_button = QPushButton("Save")
         self.output_image = QLabel()
-
-        # self.output_image.setSizePolicy(
-        #     QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        # )
-
-        # Create a scroll area widget
-        self.scroll_area = QScrollArea(self)
-        self.scroll_area.setWidgetResizable(True)
-
-        # self.scroll_area.setFixedSize(1200, 800)
-        self.scroll_area.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-
-        # Create a widget to contain the scrollable content
-        scroll_content = QWidget(self.scroll_area)
-        self.scroll_area.setWidget(scroll_content)
-
-        self.layout = QVBoxLayout(scroll_content)
-        self.layout.addWidget(self.text_input)
-        self.layout.addWidget(self.generate_button)
-
         self.image = QImage()
         self.pixmap = QPixmap()
 
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.editor)
+        self.layout.addWidget(self.generate_button)
         self.layout.addWidget(self.output_image)
         self.layout.addWidget(self.save_button)
 
-        scroll_content.setLayout(self.layout)
+        widget = QWidget()
+        widget.setLayout(self.layout)
+        self.setCentralWidget(widget)
 
-        # Create a layout for the main window and add the scroll area to it
-        main_layout = QVBoxLayout(self)
-        main_layout.addWidget(self.scroll_area)
-        self.setLayout(main_layout)
+        toolbar = QToolBar("My main toolbar")
+        toolbar.setIconSize(QSize(16, 16))
+        self.addToolBar(toolbar)
+
+        save_text_button_action = QAction(
+            QIcon("icons/disk-black.png"), "Save text", self
+        )
+        save_text_button_action.setStatusTip("Save text")
+        save_text_button_action.triggered.connect(self.onMyToolBarButtonClick)
+        save_text_button_action.setCheckable(True)
+        toolbar.addAction(save_text_button_action)
+
+        save_png_button_action = QAction(QIcon("icons/disk.png"), "Save diagram", self)
+        save_png_button_action.setStatusTip("Save diagram")
+        save_png_button_action.triggered.connect(self.onMyToolBarButtonClick)
+        save_png_button_action.setCheckable(True)
+        toolbar.addAction(save_png_button_action)
 
         self.generate_button.clicked.connect(self.generate_diagram)
         self.save_button.clicked.connect(self.save_diagram)
 
+        self.setStatusBar(QStatusBar(self))
+
+    def setUpEditor(self):
+        # define pattern rule #1: highlight class header
+        element_format = QTextCharFormat()
+        element_format.setForeground(QColor("blue"))
+        element_format.setFontWeight(QFont.Weight.Bold)
+        pattern = r"\[.*?\]|\(.*?\)|\<.*?\>"
+        self.highlighter.add_mapping(pattern, element_format)
+
+        # pattern #2: title, pool and lane format
+        title_format = QTextCharFormat()
+        title_format.setForeground(QColor("red"))
+        title_format.setFontWeight(QFont.Weight.Bold)
+        pattern = r"title:|pool:|lane:"
+        self.highlighter.add_mapping(pattern, title_format)
+
+        # pattern #3: 'as' format
+        as_format = QTextCharFormat()
+        as_format.setForeground(QColor("purple"))
+        as_format.setFontWeight(QFont.Weight.Bold)
+        pattern = r"\s+as\s+"
+        self.highlighter.add_mapping(pattern, as_format)
+
+        # pattern #3: 'as' format
+        arrow_format = QTextCharFormat()
+        arrow_format.setForeground(QColor("orange"))
+        arrow_format.setFontWeight(QFont.Weight.Bold)
+        pattern = r"-\".*?\"->|->"
+        self.highlighter.add_mapping(pattern, arrow_format)
+
+        attribute_format = QTextCharFormat()
+        attribute_format.setForeground(QColor("green"))
+        attribute_format.setFontWeight(QFont.Weight.Bold)
+        pattern = r"@parallel"
+        self.highlighter.add_mapping(pattern, attribute_format)
+
+        # pattern 3: comment format
+        comment_format = QTextCharFormat()
+        comment_format.setForeground(QColor("darkgreen"))
+        # pattern = r'^\s*#.*$' # hightlight from the beginning of the line
+        pattern = r"#.*$"  # just the text
+        self.highlighter.add_mapping(pattern, comment_format)
+
+        self.editor = QPlainTextEdit()
+        self.editor.setPlainText(self.test_text)
+
+        font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+        self.editor.setFont(font)
+
+        self.highlighter.setDocument(self.editor.document())
+
     def generate_diagram(self):
-        user_input = str(self.text_input.text())
+        user_input = str(self.editor.toPlainText())
 
         output_image_file = "output.png"
         # Call the render function to generate the diagram
@@ -280,9 +195,8 @@ done_baking-"No"->put_pizza_in_oven
 
         self.output_image.setPixmap(self.pixmap)
 
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.scroll_area.setGeometry(0, 0, self.width(), self.height())
+    def onMyToolBarButtonClick(self, s):
+        print("click", s)
 
     def save_diagram(self):
         # Get the filename of the diagram to save
@@ -303,13 +217,13 @@ if __name__ == "__main__":
 
     # Create the main window
     main_window = MainWindow()
-    icon = QIcon("flow.ico")
+    icon = QIcon("icons/flow.ico")
 
     # Set the window icon
     main_window.setWindowIcon(icon)
 
     # Other name Piperella
-    main_window.setWindowTitle("Piperino v0.1 (a graphical frontend for ProcessPiper)")
+    main_window.setWindowTitle("Piperoni v0.1 (a graphical frontend for ProcessPiper)")
     main_window.setGeometry(0, 0, 1200, 800)
     screen = QApplication.instance().primaryScreen()
 
