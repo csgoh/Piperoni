@@ -8,7 +8,7 @@ a = Analysis(
     ['gui-pyqt6.py'],
     pathex=[],
     binaries=[],
-    datas=[('flow.ico', '.')],
+    datas=[('icons/flow.ico', 'icons/flow.ico')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -41,5 +41,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['flow.ico'],
+    icon=['icons/flow.ico'],
 )
