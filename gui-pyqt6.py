@@ -67,18 +67,20 @@ class MainWindow(QMainWindow):
 		"""
         )
 
-        self.test_text = """
-#Showcase Process Piper plain text to diagram capability
+        self.test_text = """#Showcase Process Piper plain text to diagram capability
 title: Make pizza process
 colourtheme: BLUEMOUNTAIN
+
+# Define the swimlane and BPMN elements
 lane: Pizza Shop
     (start) as start
     [Put the pizza in the oven] as put_pizza_in_oven
     [Check to see if pizza is done] as check_pizza_done
-    <@parallel Done baking?> as done_baking
+    <@exclusive Done baking?> as done_baking
     [Take the pizza out of the oven] as take_pizza_out_of_oven
     (end) as end
-    
+
+# Connect all the elements    
 start->put_pizza_in_oven->check_pizza_done->done_baking
 done_baking-"Yes"->take_pizza_out_of_oven->end
 done_baking-"No"->put_pizza_in_oven
@@ -102,23 +104,23 @@ done_baking-"No"->put_pizza_in_oven
         widget.setLayout(self.layout)
         self.setCentralWidget(widget)
 
-        toolbar = QToolBar("My main toolbar")
-        toolbar.setIconSize(QSize(16, 16))
-        self.addToolBar(toolbar)
+        # toolbar = QToolBar("My main toolbar")
+        # toolbar.setIconSize(QSize(16, 16))
+        # self.addToolBar(toolbar)
 
-        save_text_button_action = QAction(
-            QIcon("icons/disk-black.png"), "Save text", self
-        )
-        save_text_button_action.setStatusTip("Save text")
-        save_text_button_action.triggered.connect(self.onMyToolBarButtonClick)
-        save_text_button_action.setCheckable(True)
-        toolbar.addAction(save_text_button_action)
+        # save_text_button_action = QAction(
+        #     QIcon("icons/disk-black.png"), "Save text", self
+        # )
+        # save_text_button_action.setStatusTip("Save text")
+        # save_text_button_action.triggered.connect(self.onMyToolBarButtonClick)
+        # save_text_button_action.setCheckable(True)
+        # toolbar.addAction(save_text_button_action)
 
-        save_png_button_action = QAction(QIcon("icons/disk.png"), "Save diagram", self)
-        save_png_button_action.setStatusTip("Save diagram")
-        save_png_button_action.triggered.connect(self.onMyToolBarButtonClick)
-        save_png_button_action.setCheckable(True)
-        toolbar.addAction(save_png_button_action)
+        # save_png_button_action = QAction(QIcon("icons/disk.png"), "Save diagram", self)
+        # save_png_button_action.setStatusTip("Save diagram")
+        # save_png_button_action.triggered.connect(self.onMyToolBarButtonClick)
+        # save_png_button_action.setCheckable(True)
+        # toolbar.addAction(save_png_button_action)
 
         self.generate_button.clicked.connect(self.generate_diagram)
         self.save_button.clicked.connect(self.save_diagram)
@@ -158,7 +160,7 @@ done_baking-"No"->put_pizza_in_oven
         attribute_format = QTextCharFormat()
         attribute_format.setForeground(QColor("red"))
         attribute_format.setFontWeight(QFont.Weight.Bold)
-        pattern = r"@parallel"
+        pattern = r"@timer|@intermediate|@subprocess|@parallel|@inclusive|@exclusive"
         self.highlighter.add_mapping(pattern, attribute_format)
 
         colourtheme_format = QTextCharFormat()
@@ -257,7 +259,7 @@ if __name__ == "__main__":
     main_window.setWindowIcon(icon)
 
     # Other name Piperella
-    main_window.setWindowTitle("Piperoni v0.1 (a graphical frontend for ProcessPiper)")
+    main_window.setWindowTitle("Piperoni v0.2 (a graphical frontend for ProcessPiper)")
     main_window.setGeometry(0, 0, 1200, 800)
     screen = QApplication.instance().primaryScreen()
 
