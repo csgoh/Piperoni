@@ -67,12 +67,15 @@ class MainWindow(QMainWindow):
 		"""
         )
 
-        self.test_text = """title: Make pizza process
+        self.test_text = """
+#Showcase Process Piper plain text to diagram capability
+title: Make pizza process
+colourtheme: BLUEMOUNTAIN
 lane: Pizza Shop
     (start) as start
     [Put the pizza in the oven] as put_pizza_in_oven
     [Check to see if pizza is done] as check_pizza_done
-    <Done baking?> as done_baking
+    <@parallel Done baking?> as done_baking
     [Take the pizza out of the oven] as take_pizza_out_of_oven
     (end) as end
     
@@ -125,47 +128,78 @@ done_baking-"No"->put_pizza_in_oven
     def setUpEditor(self):
         # define pattern rule #1: highlight class header
         element_format = QTextCharFormat()
-        element_format.setForeground(QColor("blue"))
+        element_format.setForeground(QColor("#C55A11"))
         element_format.setFontWeight(QFont.Weight.Bold)
         pattern = r"\[.*?\]|\(.*?\)|\<.*?\>"
         self.highlighter.add_mapping(pattern, element_format)
 
         # pattern #2: title, pool and lane format
         title_format = QTextCharFormat()
-        title_format.setForeground(QColor("red"))
+        title_format.setForeground(QColor("#2E75B6"))
         title_format.setFontWeight(QFont.Weight.Bold)
-        pattern = r"title:|pool:|lane:"
+        pattern = r"title:|colourtheme:|pool:|lane:"
         self.highlighter.add_mapping(pattern, title_format)
 
         # pattern #3: 'as' format
         as_format = QTextCharFormat()
-        as_format.setForeground(QColor("purple"))
+        as_format.setForeground(QColor("#2E75B6"))
         as_format.setFontWeight(QFont.Weight.Bold)
         pattern = r"\s+as\s+"
         self.highlighter.add_mapping(pattern, as_format)
 
         # pattern #3: 'as' format
         arrow_format = QTextCharFormat()
-        arrow_format.setForeground(QColor("orange"))
+        arrow_format.setForeground(QColor("#2E75B6"))
         arrow_format.setFontWeight(QFont.Weight.Bold)
         pattern = r"-\".*?\"->|->"
         self.highlighter.add_mapping(pattern, arrow_format)
 
+        # gateway attribute pattern format
         attribute_format = QTextCharFormat()
-        attribute_format.setForeground(QColor("green"))
+        attribute_format.setForeground(QColor("red"))
         attribute_format.setFontWeight(QFont.Weight.Bold)
         pattern = r"@parallel"
         self.highlighter.add_mapping(pattern, attribute_format)
 
+        colourtheme_format = QTextCharFormat()
+        colourtheme_format.setForeground(QColor("blue"))
+        colourtheme_format.setFontWeight(QFont.Weight.Bold)
+        pattern = r"BLUEMOUNTAIN"
+        self.highlighter.add_mapping(pattern, colourtheme_format)
+
+        colourtheme_format = QTextCharFormat()
+        colourtheme_format.setForeground(QColor("orange"))
+        colourtheme_format.setFontWeight(QFont.Weight.Bold)
+        pattern = r"ORANGEPEEL"
+        self.highlighter.add_mapping(pattern, colourtheme_format)
+
+        colourtheme_format = QTextCharFormat()
+        colourtheme_format.setForeground(QColor("green"))
+        colourtheme_format.setFontWeight(QFont.Weight.Bold)
+        pattern = r"GREENTURTLE"
+        self.highlighter.add_mapping(pattern, colourtheme_format)
+
+        colourtheme_format = QTextCharFormat()
+        colourtheme_format.setForeground(QColor("grey"))
+        colourtheme_format.setFontWeight(QFont.Weight.Bold)
+        pattern = r"GREYWOLF"
+        self.highlighter.add_mapping(pattern, colourtheme_format)
+
         # pattern 3: comment format
         comment_format = QTextCharFormat()
-        comment_format.setForeground(QColor("darkgreen"))
+        comment_format.setForeground(QColor("green"))
+        comment_format.setFontItalic(True)
+        comment_format.setFontWeight(QFont.Weight.Normal)
         # pattern = r'^\s*#.*$' # hightlight from the beginning of the line
         pattern = r"#.*$"  # just the text
         self.highlighter.add_mapping(pattern, comment_format)
 
         self.editor = QPlainTextEdit()
         self.editor.setPlainText(self.test_text)
+        # self.editor.setTabStopDistance(40)
+        self.editor.setTabStopDistance(
+            QFontMetricsF(self.editor.font()).horizontalAdvance(" " * 14)
+        )
 
         font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
         self.editor.setFont(font)
