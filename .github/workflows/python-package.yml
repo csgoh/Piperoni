@@ -55,6 +55,8 @@ jobs:
 
       - name: run git
         run: |
+          git config --global user.email "cs.goh@outlook.com"
+          git config --global user.name "CSGoh"
           git add dist/
           git commit -m "Add compiled executable to dist folder"
           git push origin main
