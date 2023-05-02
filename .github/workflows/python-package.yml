@@ -52,3 +52,9 @@ jobs:
         with:
           name: piperoni-${{ matrix.os }}-${{ matrix.python-version }}
           path: dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
+
+      - name: run git
+        run: |
+          git add dist/
+          git commit -m "Add compiled executable to dist folder"
+          git push origin main
