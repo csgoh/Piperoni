@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10"]
 
     steps:
       - name: Checkout code
@@ -40,7 +40,7 @@ jobs:
         run: pyinstaller -y piperoni.spec
 
       - name: Zip executable
-        run: zip dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip dist/your_script
+        run: zip dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip dist/piperoni
 
       - name: Publish executable
         uses: actions/upload-artifact@v2
