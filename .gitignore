@@ -131,3 +131,5 @@ dmypy.json
 
 output*png
 piper*png
+dist/
+build/
