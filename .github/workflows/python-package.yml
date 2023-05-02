@@ -40,6 +40,11 @@ jobs:
         run: pyinstaller -y piperoni.spec
 
       - name: Zip executable
+        if: matrix.os == 'windows-latest'
+        run: Compress-Archive -Path dist/piperoni -DestinationPath dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
+      
+      - name: Zip executable
+        if: matrix.os != 'windows-latest'
         run: zip dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip dist/piperoni
 
       - name: Publish executable
