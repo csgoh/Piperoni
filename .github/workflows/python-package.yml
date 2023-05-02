@@ -28,16 +28,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
+          pip install -r requirements
 
       - name: Build executable
-        run: pyinstaller --onefile your_script.py
+        run: pyinstaller -y piperoni.spec
 
       - name: Zip executable
-        run: zip dist/your_script-${{ matrix.os }}-${{ matrix.python-version }}.zip dist/your_script
+        run: zip dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip dist/your_script
 
       - name: Publish executable
         uses: actions/upload-artifact@v2
         with:
-          name: your_script-${{ matrix.os }}-${{ matrix.python-version }}
-          path: dist/your_script-${{ matrix.os }}-${{ matrix.python-version }}.zip
+          name: piperoni-${{ matrix.os }}-${{ matrix.python-version }}
+          path: dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
