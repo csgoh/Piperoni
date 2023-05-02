@@ -1,0 +1,43 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python package
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+
+      - name: Build executable
+        run: pyinstaller --onefile your_script.py
+
+      - name: Zip executable
+        run: zip dist/your_script-${{ matrix.os }}-${{ matrix.python-version }}.zip dist/your_script
+
+      - name: Publish executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: your_script-${{ matrix.os }}-${{ matrix.python-version }}
+          path: dist/your_script-${{ matrix.os }}-${{ matrix.python-version }}.zip
