@@ -6,8 +6,10 @@ A graphical frontend application for [ProcessPiper](https://github.com/csgoh/pro
 
 ## Installation
 * Windows application ([download the zip files here](https://github.com/csgoh/Piperino/blob/main/dist/piperoni-windows.zip))
-* For all other operating systems, you can clone/download this repo and compile it by using the following steps
+* For all other operating systems (linux, osx), you can clone/download this repo and compile it by using the following steps
   * run `pip install -r requirements.txt`
   * run `pyinstaller piperoni.spec`
+
+Note: Compiled application for linux and osx platform will be provided via CI automation shortly.
 
 
