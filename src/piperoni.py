@@ -246,7 +246,7 @@ done_baking-"No"->put_pizza_in_oven
         title_format = QTextCharFormat()
         title_format.setForeground(QColor("#2E75B6"))
         title_format.setFontWeight(QFont.Weight.Bold)
-        pattern = r"title:|colourtheme:|pool:|lane:"
+        pattern = r"title:|width:|colourtheme:|pool:|lane:"
         self.highlighter.add_mapping(pattern, title_format)
 
         # pattern #3: 'as' format
