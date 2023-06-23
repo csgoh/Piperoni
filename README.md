@@ -14,7 +14,7 @@ v0.4.0
 Refer to [Processpiper Wiki](https://github.com/csgoh/processpiper/wiki/Usage-Documentation) for documentation on Piperflow syntax.
 
 ## Installation
-* Windows application. Download the zip files from the /dist folder.
+* Windows application. Download the zip files from the [distribution folder](https://github.com/csgoh/Piperoni/tree/main/dist).
 * For all other operating systems (linux, osx), you can clone/download this repo and compile it by using the following steps
   * run `pip install -r requirements.txt`
   * run `pyinstaller piperoni.spec`
