@@ -22,3 +22,5 @@ Refer to [Processpiper Wiki](https://github.com/csgoh/processpiper/wiki/Usage-Do
 Note: Compiled application for linux and osx platform will be provided via CI automation shortly.
 
 
+## Contributors Needed 🙋‍♂️
+I am too tied up with my day job and other open source projects. I need help from you to bring this application to the next level. Let me know if you would like to contribute! Thank you!
