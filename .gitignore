@@ -132,3 +132,7 @@ dmypy.json
 output*png
 piper*png
 build/
+dist/piperoni/
+app.py
+config.toml
+.vscode/
