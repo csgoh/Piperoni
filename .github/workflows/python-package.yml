@@ -59,7 +59,7 @@ jobs:
       - name: Get piperoni verion (windows)
         if: matrix.os == 'windows-latest'
         run: |
-          echo "PIPERRONI_VERSION=$(python get_version.py)" >> $GITHUB_ENV
+          echo "PIPERRONI_VERSION=$(python get_version.py)" >> $env:GITHUB_ENV
 
       - name: Zip executable for windows
         if: matrix.os == 'windows-latest'
