@@ -1,3 +1,7 @@
+<p align="center">
+<img src="images/logo/processpiper-logo.png"  width="300">
+</p>
+
 # Piperoni
 
 A graphical frontend application for [ProcessPiper](https://github.com/csgoh/processpiper) python package. This frontend application allows any users to generate business process diagram using English words.
