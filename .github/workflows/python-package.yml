@@ -8,6 +8,9 @@ on:
     branches: [ "main" ]
     paths-ignore:
       - 'dist/**'
+      - 'images/**'
+      - '*.md'
+      - '*.png'
 
 jobs:
   build:
@@ -16,7 +19,7 @@ jobs:
     strategy:
       matrix:
         #os: [windows-latest, ubuntu-latest, macos-latest]
-        os: [ubuntu-latest, macos-latest]
+        os: [windows-latest]
         python-version: ["3.10"]
 
     steps:
@@ -47,10 +50,16 @@ jobs:
         run: |
           pyinstaller -y piperoni.spec
 
-      - name: Get piperoni verion
+      - name: Get piperoni verion (ubuntu and macos)
+        if: matrix.os != 'windows-latest'
         run: |
           export PIPERRONI_VERSION=$(python get_version.py)
           echo "PIPERRONI_VERSION=$PIPERRONI_VERSION" >> $GITHUB_ENV
+      
+      - name: Get piperoni verion (windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          echo "PIPERRONI_VERSION=$(python get_version.py)" >> $GITHUB_ENV
 
       - name: Zip executable for windows
         if: matrix.os == 'windows-latest'
