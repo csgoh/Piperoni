@@ -13,7 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        #os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         python-version: ["3.10"]
 
     steps:
@@ -40,7 +41,9 @@ jobs:
           if (Test-Path requirements.txt) { pip install -r requirements.txt }
 
       - name: Build executable
-        run: pyinstaller -y piperoni.spec
+        run: |
+          pyinstaller -y piperoni.spec
+          ls
 
       - name: Zip executable for windows
         if: matrix.os == 'windows-latest'
