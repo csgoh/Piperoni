@@ -47,7 +47,7 @@ jobs:
       - name: Get piperoni verion
         run: |
           export PIPERRONI_VERSION=$(python get_version.py)
-          echo $PIPERRONI_VERSION
+          echo "PIPERRONI_VERSION=$PIPERRONI_VERSION" >> $GITHUB_ENV
 
       - name: Zip executable for windows
         if: matrix.os == 'windows-latest'
@@ -73,7 +73,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
+          git add dist/piperoni-ubuntu-${{ env.PIPERRONI_VERSION }}.zip
           git commit -a -m "Upload dist"
       - name: Push changes
         uses: ad-m/github-push-action@master
