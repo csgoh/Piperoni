@@ -34,6 +34,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          
       - name: Install dependencies (Windows)
         if: matrix.os == 'windows-latest'
         run: |
@@ -51,7 +52,10 @@ jobs:
 
       - name: Zip executable for windows
         if: matrix.os == 'windows-latest'
-        run: Compress-Archive -Path dist/piperoni -DestinationPath dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
+        run: |
+          Compress-Archive -Path dist/piperoni -DestinationPath piperoni-windows-${{ env.PIPERRONI_VERSION }}.zip
+          copy piperoni-windows-${{ env.PIPERRONI_VERSION }}.zip dist/
+
       - name: Zip executable for ubuntu
         if: matrix.os == 'ubuntu-latest' 
         run: |
@@ -68,13 +72,30 @@ jobs:
         with:
           name: piperoni-${{ matrix.os }}-${{ matrix.python-version }}
           path: dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
-
-      - name: Commit files
+        
+      - name: Configure git user
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+      
+      - name: Commit files to git (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          git add dist/piperoni-windows-${{ env.PIPERRONI_VERSION }}.zip
+          git commit -a -m "Upload dist"
+      
+      - name: Commit files to git (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
           git add dist/piperoni-ubuntu-${{ env.PIPERRONI_VERSION }}.zip
           git commit -a -m "Upload dist"
+      
+      - name: Commit files to git (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          git add dist/piperoni-macos-${{ env.PIPERRONI_VERSION }}.zip
+          git commit -a -m "Upload dist"
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
