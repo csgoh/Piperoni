@@ -67,6 +67,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          git add dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
           git commit -a -m "Upload dist"
       - name: Push changes
         uses: ad-m/github-push-action@master
