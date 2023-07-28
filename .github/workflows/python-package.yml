@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         #os: [windows-latest, ubuntu-latest, macos-latest]
-        os: [macos-latest]
+        os: [ubuntu-latest]
         python-version: ["3.10"]
 
     steps:
@@ -43,12 +43,11 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller -y piperoni.spec
-          pwd
-          ls
-          ls dist
 
       - name: Get piperoni verion
-        run: export PIPERRONI_VERSION=$(python get_version.py)
+        run: |
+          export PIPERRONI_VERSION=$(python get_version.py)
+          echo $PIPERRONI_VERSION
 
       - name: Zip executable for windows
         if: matrix.os == 'windows-latest'
