@@ -18,7 +18,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -53,10 +56,12 @@ jobs:
           name: piperoni-${{ matrix.os }}-${{ matrix.python-version }}
           path: dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
 
-      - name: run git
+      - name: Commit files
         run: |
-          git config --global user.email "cs.goh@outlook.com"
-          git config --global user.name "CSGoh"
-          git add dist/
-          git commit -m "Add compiled executable to dist folder"
-          git push origin main
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "Add changes"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ github.head_ref }}
