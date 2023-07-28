@@ -69,11 +69,11 @@ jobs:
           zip -j piperoni-macos-${{ env.PIPERRONI_VERSION }}.zip /Users/runner/work/Piperoni/Piperoni/dist/piperoni/*
           cp piperoni-macos-${{ env.PIPERRONI_VERSION }}.zip dist/
    
-      - name: Publish executable
-        uses: actions/upload-artifact@v2
-        with:
-          name: piperoni-${{ matrix.os }}-${{ matrix.python-version }}
-          path: dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
+      # - name: Publish executable
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: piperoni-${{ matrix.os }}-${{ matrix.python-version }}
+      #     path: dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
         
       - name: Configure git user
         run: |
@@ -83,18 +83,21 @@ jobs:
       - name: Commit files to git (Windows)
         if: matrix.os == 'windows-latest'
         run: |
+          git pull origin main
           git add dist/piperoni-windows-${{ env.PIPERRONI_VERSION }}.zip
           git commit -a -m "Upload dist"
       
       - name: Commit files to git (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
+          git pull origin main
           git add dist/piperoni-ubuntu-${{ env.PIPERRONI_VERSION }}.zip
           git commit -a -m "Upload dist"
       
       - name: Commit files to git (macOS)
         if: matrix.os == 'macos-latest'
         run: |
+          git pull origin main
           git add dist/piperoni-macos-${{ env.PIPERRONI_VERSION }}.zip
           git commit -a -m "Upload dist"
 
