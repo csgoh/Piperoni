@@ -43,14 +43,16 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller -y piperoni.spec
+          pwd
           ls
+          ls dist
 
       - name: Zip executable for windows
         if: matrix.os == 'windows-latest'
         run: Compress-Archive -Path dist/piperoni -DestinationPath dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
       - name: Zip executable for ubuntu
         if: matrix.os == 'ubuntu-latest'
-        run: zip dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip /home/runner/work/Piperoni/Piperoni/dist/piperoni
+        run: zip -r dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip /home/runner/work/Piperoni/Piperoni/dist/piperoni
       - name: Zip executable for macos
         if: matrix.os == 'macos-latest'
         run: zip dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip /Users/runner/work/Piperoni/Piperoni/dist/piperoni
