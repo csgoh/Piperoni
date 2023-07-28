@@ -66,8 +66,8 @@ jobs:
       - name: Zip executable for macos
         if: matrix.os == 'macos-latest'
         run: |
-          zip -j piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip /Users/runner/work/Piperoni/Piperoni/dist/piperoni/*
-          cp piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip dist/
+          zip -j piperoni-macos-${{ env.PIPERRONI_VERSION }}.zip /Users/runner/work/Piperoni/Piperoni/dist/piperoni/*
+          cp piperoni-macos-${{ env.PIPERRONI_VERSION }}.zip dist/
    
       - name: Publish executable
         uses: actions/upload-artifact@v2
