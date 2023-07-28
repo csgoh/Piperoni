@@ -47,14 +47,17 @@ jobs:
           ls
           ls dist
 
+      - name: Get piperoni verion
+        run: export PIPERRONI_VERSION=$(python get_version.py)
+
       - name: Zip executable for windows
         if: matrix.os == 'windows-latest'
         run: Compress-Archive -Path dist/piperoni -DestinationPath dist/piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip
       - name: Zip executable for ubuntu
         if: matrix.os == 'ubuntu-latest' 
         run: |
-          zip -j piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip /home/runner/work/Piperoni/Piperoni/dist/piperoni/*
-          cp piperoni-${{ matrix.os }}-${{ matrix.python-version }}.zip dist/
+          zip -j piperoni-ubuntu-${{ env.PIPERRONI_VERSION }}.zip /home/runner/work/Piperoni/Piperoni/dist/piperoni/*
+          cp piperoni-ubuntu-${{ env.PIPERRONI_VERSION }}.zip dist/
       - name: Zip executable for macos
         if: matrix.os == 'macos-latest'
         run: |
