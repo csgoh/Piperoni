@@ -20,5 +20,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Version information for processpiper."""
-__version__ = "v0.4.3"
+"""Version information for piperoni."""
+__version__ = "v0.5.0"
