@@ -9,10 +9,10 @@ A graphical frontend application for [ProcessPiper](https://github.com/csgoh/pro
 ![Showcase](https://github.com/csgoh/Piperino/blob/main/images/showcase02.png)
 
 ## Latest version
-v0.4.3 (Aligns with Processpiper version)
+v0.5.0 
 
 ## Change Logs:
-* Updated processpiper package to v0.4.3
+* Updated processpiper package to v0.6
 
 ## PiperFlow Syntax
 Refer to [Processpiper Wiki](https://github.com/csgoh/processpiper/wiki/Usage-Documentation) for documentation on Piperflow syntax.
